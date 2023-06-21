@@ -17,7 +17,7 @@ commands:
            /plugman check <plugin|all> [-f]
            /plugman lookup <command>
            /plugman (enable|disable|restart) <plugin|all>
-           /plugman (info|usage|load|download|reload|unload) <plugin>
+           /plugman (info|usage|load|download|reload|unload|depends) <plugin>
 permissions:
   plugman.admin:
     description: Allows use of all PlugMan commands.

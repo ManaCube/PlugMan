@@ -79,6 +79,14 @@ download:
   invalid-url: '&cYou must specify a valid URL that starts with http:// or https://.'
   malformed-url: '&cSpecified URL is malformed.'
   download-failed: '&cDownload failed. Check console for more information'
+depends:
+    header: '&7Plugins that depend on &9{0}&7: {1}'
+    none: '&7No plugins depend on &9{0}&7, reloading should be safe.'
+    tab: '  '
+    line-header: '&7↳ '
+    plugin-separator: '&7, '
+    soft-depend: '&e{0}'
+    depend: '&6{0}'
 lookup:
   found: '&9/{0} is registered to {1}.'
   not-found: '&cCommand "/{0}" not registered in any plugin.yml'
