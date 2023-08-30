@@ -26,6 +26,8 @@ package com.rylinaux.plugman.util;
  * #L%
  */
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.rylinaux.plugman.PlugMan;
 import com.rylinaux.plugman.api.GentleUnload;
 import com.rylinaux.plugman.api.PlugManAPI;
@@ -313,28 +315,21 @@ public class BukkitPluginUtil implements PluginUtil {
      */
     @Override
     public List<String> findByCommand(String command) {
-        List<String> plugins = new ArrayList<>();
+        Set<String> plugins = Sets.newHashSet();
 
         for (Map.Entry<String, Command> s : this.getKnownCommands().entrySet()) {
             ClassLoader cl = s.getValue().getClass().getClassLoader();
             if (cl.getClass() != this.pluginClassLoader) {
                 String[] parts = s.getKey().split(":");
+
                 if (parts.length == 2 && parts[1].equalsIgnoreCase(command)) {
                     Plugin plugin = Bukkit.getPluginManager().getPlugin(parts[0]);
                     if (plugin != null) plugins.add(plugin.getName());
                 }
-                continue;
-            }
-
-            try {
-                JavaPlugin plugin = (JavaPlugin) this.pluginClassLoaderPlugin.get(cl);
-                plugins.add(plugin.getName());
-            } catch (IllegalAccessException ignored) {
             }
         }
 
-        return plugins;
-
+        return Lists.newArrayList(plugins);
     }
 
     /**
