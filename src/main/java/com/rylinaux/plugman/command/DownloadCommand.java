@@ -2,6 +2,7 @@ package com.rylinaux.plugman.command;
 
 import com.rylinaux.plugman.PlugMan;
 import org.apache.commons.lang.math.NumberUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -82,7 +83,9 @@ public class DownloadCommand extends AbstractCommand {
      */
     @Override
     public void execute(CommandSender sender, Command command, String label, String[] args) {
+        sender.sendMessage(ChatColor.RED + "This command is disabled.");
 
+        /*
         if (!hasPermission()) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.no-permission"));
             return;
@@ -140,6 +143,7 @@ public class DownloadCommand extends AbstractCommand {
         String name = file.getName();
         name = name.substring(0, name.length() - 4);
         sender.sendMessage(PlugMan.getInstance().getPluginUtil().load(name));
+        */
     }
 
 }
