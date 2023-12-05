@@ -25,7 +25,7 @@ public class UnloadCommand {
         PluginManager pluginManager = ProxyServer.getInstance().getPluginManager();
 
         if (pluginManager.getPlugin(pluginName) == null) {
-            sendMessage(sender, "§cEs gibt kein Plugin mit dem Namen §4" + pluginName + "§c!");
+            sendMessage(sender, "§cThere is no plugin named §4" + pluginName + "§c!");
             return;
         }
 

@@ -23,7 +23,7 @@ public class LoadCommand {
 
     public void execute(CommandSender sender, String[] args) {
         if (args.length <= 0) {
-            this.sendMessage(sender, "§cSyntax: §4/PlugManBungee unload <Datei>");
+            this.sendMessage(sender, "§cSyntax: §4/PlugManBungee unload <File>");
             return;
         }
 
@@ -32,7 +32,7 @@ public class LoadCommand {
         File file = new File("plugins", filename + ".jar");
 
         if (!file.exists()) {
-            this.sendMessage(sender, "§cEs gibt keine Plugin-Datei mit dem Namen §4" + filename + "§c!");
+            this.sendMessage(sender, "§cThere is no plugin file named §4" + filename + "§c!");
             return;
         }
 

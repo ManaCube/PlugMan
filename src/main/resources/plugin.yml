@@ -1,9 +1,10 @@
 name: PlugManX
 main: com.rylinaux.plugman.PlugMan
-version: 2.3.4
+version: ${project.version}
 description: Plugin manager for Bukkit servers
 authors: [rylinaux, Entity303]
 api-version: 1.13
+folia-supported: true
 provides: [PlugMan]
 load: STARTUP
 softdepend:

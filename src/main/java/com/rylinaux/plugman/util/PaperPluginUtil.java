@@ -48,6 +48,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -354,6 +355,15 @@ public class PaperPluginUtil implements PluginUtil {
         }
     }
 
+    public boolean isFolia() {
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            return true;
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
     /**
      * Loads and enables a plugin.
      *
@@ -431,7 +441,14 @@ public class PaperPluginUtil implements PluginUtil {
 
         if (!(PlugMan.getInstance().getBukkitCommandWrap() instanceof BukkitCommandWrap_Useless)) {
             Plugin finalTarget = target;
-            Bukkit.getScheduler().runTaskLater(PlugMan.getInstance(), () -> {
+
+            if (this.isFolia()) {
+                com.tcoded.folialib.FoliaLib foliaLib = new com.tcoded.folialib.FoliaLib(PlugMan.getInstance());
+
+                foliaLib.getImpl().runLater(() -> {
+                    this.loadCommands(finalTarget);
+                }, 500, TimeUnit.MILLISECONDS);
+            } else Bukkit.getScheduler().runTaskLater(PlugMan.getInstance(), () -> {
                 this.loadCommands(finalTarget);
             }, 10L);
 
@@ -446,7 +463,7 @@ public class PaperPluginUtil implements PluginUtil {
     }
 
     private void unloadCommands(Plugin target) {
-        this.bukkitPluginUtil.loadCommands(target);
+        this.bukkitPluginUtil.unloadCommands(target);
     }
 
     @Override

@@ -91,6 +91,9 @@ public class DownloadCommand extends AbstractCommand {
             return;
         }
 
+        if (PlugMan.getInstance().isDisableDownloadCommand())
+            return;
+
         URL url;
         switch (args.length < 2 ? "" : args[1]) {
             case "spigot":

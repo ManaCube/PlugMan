@@ -323,9 +323,30 @@ public class BukkitPluginUtil implements PluginUtil {
                 String[] parts = s.getKey().split(":");
 
                 if (parts.length == 2 && parts[1].equalsIgnoreCase(command)) {
-                    Plugin plugin = Bukkit.getPluginManager().getPlugin(parts[0]);
-                    if (plugin != null) plugins.add(plugin.getName());
+                    Plugin plugin = Arrays.stream(Bukkit.getPluginManager().getPlugins()).
+                            filter(pl -> pl.getName().equalsIgnoreCase(parts[0])).
+                            findFirst().orElse(null);
+
+                    if (plugin != null)
+                        plugins.add(plugin.getName());
                 }
+                continue;
+            }
+
+            try {
+                String[] parts = s.getKey().split(":");
+                String cmd = parts[parts.length - 1];
+
+                if (!cmd.equalsIgnoreCase(command))
+                    continue;
+
+                JavaPlugin plugin = (JavaPlugin) this.pluginClassLoaderPlugin.get(cl);
+
+                if (plugins.contains(plugin.getName()))
+                    continue;
+
+                plugins.add(plugin.getName());
+            } catch (IllegalAccessException ignored) {
             }
         }
 
