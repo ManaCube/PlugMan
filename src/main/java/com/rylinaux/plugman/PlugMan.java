@@ -248,11 +248,35 @@ public class PlugMan extends JavaPlugin {
 
         FileConfiguration messageConfiguration = YamlConfiguration.loadConfiguration(messagesFile);
 
-        if (!messageConfiguration.isSet("error.paper-plugin")) try {
+        boolean saveConfig = false;
+
+        if (!messageConfiguration.isSet("help.depends"))
+        {
+            messageConfiguration.set("help.depends", "&7- &e/plugman depends <plugin> &f- &7List plugins that depend on a queried plugin.");
+            saveConfig = true;
+        }
+
+        if (!messageConfiguration.isSet("help.download") || !messageConfiguration.getString("help.download", "").contains("&c/plugman download"))
+        {
+            messageConfiguration.set("help.download", "&7- &c/plugman download <direct|spigot> <ID|URL> &f- &7Download and load a plugin.");
+            saveConfig = true;
+        }
+
+        if (!messageConfiguration.isSet("error.paper-plugin"))
+        {
             messageConfiguration.set("error.paper-plugin", "&cPaper plugins are currently not supported, I'm sorry.");
-            messageConfiguration.save(messagesFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            saveConfig = true;
+        }
+
+        if (saveConfig)
+        {
+            try
+            {
+                messageConfiguration.save(messagesFile);
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
         }
 
         this.messageFormatter = new MessageFormatter();
