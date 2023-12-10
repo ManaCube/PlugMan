@@ -21,7 +21,6 @@ public class BukkitCommandWrap {
     private Field vanillaCommandDispatcherField;
     private Method getCommandDispatcherMethod;
     private Method registerMethod;
-    private Method syncCommandsMethod;
     private Constructor bukkitcommandWrapperConstructor;
 
     public BukkitCommandWrap() {
@@ -139,26 +138,6 @@ public class BukkitCommandWrap {
 
         try {
             this.registerMethod.invoke(commandWrapper, a, alias);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void sync() {
-        if (this.syncCommandsMethod == null) try {
-            this.syncCommandsMethod = Class.forName("org.bukkit.craftbukkit." + this.nmsVersion + ".CraftServer").getDeclaredMethod("syncCommands");
-            this.syncCommandsMethod.setAccessible(true);
-
-            if (Bukkit.getOnlinePlayers().size() >= 1)
-                for (Player player : Bukkit.getOnlinePlayers())
-                    player.updateCommands();
-        } catch (NoSuchMethodException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        try {
-            this.syncCommandsMethod.invoke(Bukkit.getServer());
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }

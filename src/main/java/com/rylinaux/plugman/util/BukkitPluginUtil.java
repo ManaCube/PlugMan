@@ -687,12 +687,6 @@ public class BukkitPluginUtil implements PluginUtil {
             Command command = entry.getValue();
             PlugMan.getInstance().getBukkitCommandWrap().wrap(command, alias);
         }
-
-        PlugMan.getInstance().getBukkitCommandWrap().sync();
-
-        if (Bukkit.getOnlinePlayers().size() >= 1)
-            for (Player player : Bukkit.getOnlinePlayers())
-                player.updateCommands();
     }
 
     protected void unloadCommands(Plugin plugin) {
@@ -734,10 +728,5 @@ public class BukkitPluginUtil implements PluginUtil {
             String alias = entry.getKey();
             PlugMan.getInstance().getBukkitCommandWrap().unwrap(alias);
         }
-
-        PlugMan.getInstance().getBukkitCommandWrap().sync();
-
-        if (Bukkit.getOnlinePlayers().size() >= 1)
-            for (Player player : Bukkit.getOnlinePlayers()) player.updateCommands();
     }
 }
