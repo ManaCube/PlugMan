@@ -6,7 +6,7 @@
 
     <groupId>com.rylinaux</groupId>
     <artifactId>PlugMan</artifactId>
-    <version>2.3.5-CUSTOM</version>
+    <version>2.3.7-CUSTOM</version>
     <packaging>jar</packaging>
 
     <name>PlugMan</name>
