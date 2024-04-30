@@ -15,3 +15,5 @@ auto-unload:
 auto-reload:
   enabled: false
   check-every-seconds: 10
+# Do not change this value
+version: 1

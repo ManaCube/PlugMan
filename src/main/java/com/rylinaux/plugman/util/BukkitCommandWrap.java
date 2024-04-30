@@ -79,11 +79,22 @@ public class BukkitCommandWrap {
         }
 
         if (this.bField == null) try {
-            this.bField = Class.forName("net.minecraft.commands.CommandDispatcher").getDeclaredField("g");
+            this.bField = Class.forName("net.minecraft.server." + this.nmsVersion + ".CommandDispatcher").getDeclaredField("b");
             this.bField.setAccessible(true);
         } catch (NoSuchFieldException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return;
+            if (this.bField == null) try {
+                Class<?> commandDispatcherClass = Class.forName("net.minecraft.commands.CommandDispatcher");
+                if (commandDispatcherClass.getDeclaredField("g").getType() == com.mojang.brigadier.CommandDispatcher.class) {
+                    this.bField = commandDispatcherClass.getDeclaredField("g");
+                } else {
+                    this.bField = commandDispatcherClass.getDeclaredField("h");
+                }
+                this.bField.setAccessible(true);
+            } catch (NoSuchFieldException | ClassNotFoundException ex) {
+                ex.addSuppressed(e);
+                e.printStackTrace();
+                return;
+            }
         }
 
         com.mojang.brigadier.CommandDispatcher b;
@@ -194,7 +205,12 @@ public class BukkitCommandWrap {
             this.bField.setAccessible(true);
         } catch (NoSuchFieldException | ClassNotFoundException e) {
             if (this.bField == null) try {
-                this.bField = Class.forName("net.minecraft.commands.CommandDispatcher").getDeclaredField("g");
+                Class<?> commandDispatcherClass = Class.forName("net.minecraft.commands.CommandDispatcher");
+                if (commandDispatcherClass.getDeclaredField("g").getType() == com.mojang.brigadier.CommandDispatcher.class) {
+                    this.bField = commandDispatcherClass.getDeclaredField("g");
+                } else {
+                    this.bField = commandDispatcherClass.getDeclaredField("h");
+                }
                 this.bField.setAccessible(true);
             } catch (NoSuchFieldException | ClassNotFoundException ex) {
                 ex.addSuppressed(e);
