@@ -687,6 +687,8 @@ public class BukkitPluginUtil implements PluginUtil {
             Command command = entry.getValue();
             PlugMan.getInstance().getBukkitCommandWrap().wrap(command, alias);
         }
+
+        CommandUtil.sync();
     }
 
     protected void unloadCommands(Plugin plugin) {
