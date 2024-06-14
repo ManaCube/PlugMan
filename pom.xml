@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.rylinaux</groupId>
-    <artifactId>PlugMan</artifactId>
-    <version>2.3.7-CUSTOM</version>
+    <artifactId>PlugManX</artifactId>
+    <version>2.3.8-CUSTOM</version>
     <packaging>jar</packaging>
 
-    <name>PlugMan</name>
+    <name>PlugManX</name>
     <description>Plugin manager for Bukkit servers.</description>
-    <url>http://dev.bukkit.org/bukkit-plugins/plugman/</url>
+    <url>https://www.spigotmc.org/resources/plugmanx.88135/</url>
 
     <inceptionYear>2010</inceptionYear>
 
@@ -35,7 +35,7 @@
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/rylinaux/PlugMan/issues</url>
+        <url>https://github.com/TheBlackEntity/PlugManX/issues</url>
     </issueManagement>
 
     <properties>
@@ -119,10 +119,17 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.13</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.velocitypowered</groupId>
+            <artifactId>velocity-api</artifactId>
+            <version>3.3.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
-        <finalName>${project.artifactId}</finalName>
+        <finalName>${project.artifactId}-${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -163,6 +170,7 @@
                 <version>3.4.1</version>
                 <executions>
                     <execution>
+                        <id>compile-with-version-discriminator</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
@@ -182,6 +190,30 @@
                                     <shadedPattern>com.rylinaux.lib</shadedPattern>
                                 </relocation>
                             </relocations>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>compile-without-version-discriminator</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>commons-io</include>
+                                    <include>commons-logging</include>
+                                    <include>org.apache.httpcomponents</include>
+                                    <include>com.tcoded:FoliaLib</include>
+                                </includes>
+                            </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.tcoded</pattern>
+                                    <shadedPattern>com.rylinaux.lib</shadedPattern>
+                                </relocation>
+                            </relocations>
+                            <outputFile>target/PlugManX.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>

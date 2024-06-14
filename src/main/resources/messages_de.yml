@@ -53,7 +53,6 @@ help:
   disable: '&7- &a/plugman disable <plugin|all> &f- &7Deaktiviert ein Plugin.'
   restart: '&7- &a/plugman restart <plugin|all> &f- &7Startet ein Plugin neu.'
   load: '&7- &a/plugman load <plugin> &f- &7Lädt ein Plugin.'
-  download: '&7- &a/plugman download <direct|spigot> <ID|URL> &f- &7Lädt ein Plugin herunter und lädt es.'
   reload: '&7- &a/plugman reload <plugin|all> &f- &7Lädt ein Plugin neu.'
   unload: '&7- &a/plugman unload <plugin> &f- &7Entlädt ein Plugin.'
   check: '&7- &a/plugman check <plugin|all> [-f] &f- &7Überprüft, ob ein Plugin aktuell ist (-f legt alle in Datei ab).'
@@ -73,12 +72,6 @@ load:
   invalid-plugin: '&cDiese Datei ist kein gültiges Plugin.'
   loaded: '&9{0} wurde geladen und aktiviert.'
   plugin-dir: '&cPlugin-Verzeichnis nicht gefunden.'
-download:
-  invalid-id: '&cPlugin-ID muss eine Nummer sein.'
-  invalid-type: '&cPlugin-Typ muss entweder "direct" oder "spigot" sein.'
-  invalid-url: '&cBitte gib eine gültige URL an, die mit http:// oder https:// beginnt.'
-  malformed-url: '&cAngegebene URL ist fehlerhaft.'
-  download-failed: '&cDownload fehlgeschlagen. Überprüfe die Konsole für weitere Informationen.'
 lookup:
   found: '&9/{0} ist bei {1} registriert.'
   not-found: '&cDer Befehl "/{0}" ist in keiner plugin.yml registriert.'

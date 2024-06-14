@@ -32,7 +32,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
-import org.bukkit.entity.Player;
 
 /**
  * Abstract command class that our commands extend.
@@ -94,7 +93,7 @@ public abstract class AbstractCommand {
      * @return the command's sender
      */
     public CommandSender getSender() {
-        return sender;
+        return this.sender;
     }
 
     /**
@@ -103,7 +102,7 @@ public abstract class AbstractCommand {
      * @return the command's name
      */
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -112,7 +111,7 @@ public abstract class AbstractCommand {
      * @return the command's description
      */
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     /**
@@ -121,7 +120,7 @@ public abstract class AbstractCommand {
      * @return the command's permission
      */
     public String getPermission() {
-        return permission;
+        return this.permission;
     }
 
     /**
@@ -130,7 +129,7 @@ public abstract class AbstractCommand {
      * @return the command's sub permissions
      */
     public String[] getSubPermissions() {
-        return subPermissions;
+        return this.subPermissions;
     }
 
     /**
@@ -139,7 +138,7 @@ public abstract class AbstractCommand {
      * @return the command's usage
      */
     public String getUsage() {
-        return usage;
+        return this.usage;
     }
 
     /**
@@ -148,7 +147,9 @@ public abstract class AbstractCommand {
      * @return does the sender have permission
      */
     public boolean hasPermission() {
-        return sender.hasPermission(permission) || isSenderConsole() || isSenderRemoteConsole();
+        return this.sender.hasPermission(this.permission)
+               || this.sender instanceof ConsoleCommandSender
+               || this.sender instanceof RemoteConsoleCommandSender;
     }
 
     /**
@@ -159,43 +160,18 @@ public abstract class AbstractCommand {
      */
     public boolean hasPermission(String sub) {
         String permission = this.permission + "." + sub;
-        return sender.hasPermission(permission) || isSenderConsole() || isSenderRemoteConsole();
+        if (this.sender.hasPermission(permission) || (this.sender instanceof ConsoleCommandSender))
+            return true;
+        return (this.sender instanceof RemoteConsoleCommandSender);
     }
 
     /**
      * Sends the usage message to the sender.
      */
     public void sendUsage() {
-        sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format(false, "error.usage.command", name));
-        sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format(false, "error.usage.description", description));
-        sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format(false, "error.usage.usage", usage));
-    }
-
-    /**
-     * Checks whether the sender is a .
-     *
-     * @return is the sender a player
-     */
-    public boolean isSenderPlayer() {
-        return (sender instanceof Player);
-    }
-
-    /**
-     * Checks whether the sender is the console.
-     *
-     * @return is the sender console
-     */
-    public boolean isSenderConsole() {
-        return (sender instanceof ConsoleCommandSender);
-    }
-
-    /**
-     * Checks whether the sender is rcon.
-     *
-     * @return is the sender rcon
-     */
-    public boolean isSenderRemoteConsole() {
-        return (sender instanceof RemoteConsoleCommandSender);
+        this.sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format(false, "error.usage.command", this.name));
+        this.sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format(false, "error.usage.description", this.description));
+        this.sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format(false, "error.usage.usage", this.usage));
     }
 
     /**

@@ -53,7 +53,6 @@ help:
   disable: '&7- &a/plugman disable <plugin|all> &f- &7Deshabilita un plugin.'
   restart: '&7- &a/plugman restart <plugin|all> &f- &7Reinicia un plugin.'
   load: '&7- &a/plugman load <plugin> &f- &7Carga un plugin.'
-  download: '&7- &a/plugman download <direct|spigot> <ID|URL> &f- &7Descarga y carga un plugin.'
   reload: '&7- &a/plugman reload <plugin|all> &f- &7Recarga un plugin.'
   unload: '&7- &a/plugman unload <plugin> &f- &7Des-carga un plugin.'
   check: '&7- &a/plugman check <plugin|all> [-f] &f- &7Revisa si un plugin está actualizado (-f volca un archivo para todos).'
@@ -73,12 +72,6 @@ load:
   invalid-plugin: '&cEse archivo no es un plugin válido.'
   loaded: '&9{0} ha sido cargado y activado.'
   plugin-dir: '&cCarpeta de plugins no encontrada.'
-download:
-  invalid-id: '&cEl ID de plugin debe ser un número.'
-  invalid-type: '&cEl tipo de plugin debe ser "direct" o "spigot".'
-  invalid-url: '&cDebes especificar un URL válido que inicie con http:// o https://.'
-  malformed-url: '&cLa URL especificada está malformada.'
-  download-failed: '&cDescarga fallida. Revisa la consola para más información.'
 lookup:
   found: '&9/{0} está registrado a {1}.'
   not-found: '&cComando "/{0}" no está registrado en ningún plugin.yml'

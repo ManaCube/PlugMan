@@ -35,7 +35,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -89,8 +88,7 @@ public class ListCommand extends AbstractCommand {
      */
     @Override
     public void execute(CommandSender sender, Command command, String label, String[] args) {
-
-        if (!hasPermission()) {
+        if (!this.hasPermission()) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.no-permission"));
             return;
         }
@@ -99,11 +97,10 @@ public class ListCommand extends AbstractCommand {
 
         List<String> pluginList = Lists.newArrayList();
 
-        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+        for (Plugin plugin : Bukkit.getPluginManager().getPlugins())
             pluginList.add(PlugMan.getInstance().getPluginUtil().getFormattedName(plugin, includeVersions));
-        }
 
-        Collections.sort(pluginList, String.CASE_INSENSITIVE_ORDER);
+        pluginList.sort(String.CASE_INSENSITIVE_ORDER);
 
         String plugins = Joiner.on(", ").join(pluginList);
 

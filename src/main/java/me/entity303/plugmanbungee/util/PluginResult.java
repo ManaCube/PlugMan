@@ -10,10 +10,10 @@ public class PluginResult {
     }
 
     public String getMessage() {
-        return message;
+        return this.message;
     }
 
     public boolean isPositive() {
-        return positive;
+        return this.positive;
     }
 }

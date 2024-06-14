@@ -18,7 +18,7 @@ commands:
            /plugman check <plugin|all> [-f]
            /plugman lookup <command>
            /plugman (enable|disable|restart) <plugin|all>
-           /plugman (info|usage|load|download|reload|unload|depends) <plugin>
+           /plugman (info|usage|load|reload|unload|depends) <plugin>
 permissions:
   plugman.admin:
     description: Allows use of all PlugMan commands.
@@ -38,7 +38,6 @@ permissions:
       plugman.restart: true
       plugman.restart.all: true
       plugman.load: true
-      plugman.download: true
       plugman.reload: true
       plugman.unload: true
       plugman.check: true
@@ -84,9 +83,6 @@ permissions:
     default: op
   plugman.load:
     description: Allows use of the load command.
-    default: op
-  plugman.download:
-    description: Allows use of the download command.
     default: op
   plugman.reload:
     description: Allows use of the reload command.

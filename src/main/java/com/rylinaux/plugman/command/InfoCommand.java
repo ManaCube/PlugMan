@@ -86,15 +86,14 @@ public class InfoCommand extends AbstractCommand {
      */
     @Override
     public void execute(CommandSender sender, Command command, String label, String[] args) {
-
-        if (!hasPermission()) {
+        if (!this.hasPermission()) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.no-permission"));
             return;
         }
 
         if (args.length < 2) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.specify-plugin"));
-            sendUsage();
+            this.sendUsage();
             return;
         }
 
@@ -102,7 +101,7 @@ public class InfoCommand extends AbstractCommand {
 
         if (target == null) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.invalid-plugin"));
-            sendUsage();
+            this.sendUsage();
             return;
         }
 
@@ -117,8 +116,14 @@ public class InfoCommand extends AbstractCommand {
         sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format(false, "info.version", version));
         sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format(false, "info.authors", authors));
         sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format(false, "info.status", status));
-        if (!dependList.isEmpty()) sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format(false, "info.depends", Joiner.on(", ").join(dependList)));
-        if (!softdependList.isEmpty()) sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format(false, "info.softdepends", Joiner.on(", ").join(softdependList)));
+
+        if (!dependList.isEmpty())
+            sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format(false, "info.depends",
+                                                                                  Joiner.on(", ").join(dependList)));
+
+        if (!softdependList.isEmpty())
+            sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format(false, "info.softdepends",
+                                                                                  Joiner.on(", ").join(softdependList)));
 
     }
 }

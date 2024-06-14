@@ -57,7 +57,7 @@ public class MessageFormatter {
      * @return the formatted String
      */
     public String format(String key, Object... args) {
-        return format(true, key, args);
+        return this.format(true, key, args);
     }
 
     /**
@@ -69,7 +69,7 @@ public class MessageFormatter {
      * @return the formatted String
      */
     public String format(boolean prefix, String key, Object... args) {
-        String message = prefix ? messageFile.get("prefix") + messageFile.get(key) : messageFile.get(key);
+        String message = prefix? this.messageFile.get("prefix") + this.messageFile.get(key) : this.messageFile.get(key);
         for (int i = 0; i < args.length; i++)
             message = message.replace("{" + i + "}", String.valueOf(args[i]));
         return ChatColor.translateAlternateColorCodes('&', message);
@@ -82,7 +82,7 @@ public class MessageFormatter {
      * @return the message with the prefix.
      */
     public String prefix(String msg) {
-        return ChatColor.translateAlternateColorCodes('&', messageFile.get("prefix") + msg);
+        return ChatColor.translateAlternateColorCodes('&', this.messageFile.get("prefix") + msg);
     }
 
     /**
@@ -91,7 +91,7 @@ public class MessageFormatter {
      * @return the message configuration.
      */
     public MessageFile getMessageFile() {
-        return messageFile;
+        return this.messageFile;
     }
 
 }

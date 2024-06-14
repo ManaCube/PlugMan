@@ -92,14 +92,14 @@ public class CheckCommand extends AbstractCommand {
      */
     @Override
     public void execute(final CommandSender sender, final Command command, final String label, final String[] args) {
-        if (!hasPermission()) {
+        if (!this.hasPermission()) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.no-permission"));
             return;
         }
 
         if (args.length < 2) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.specify-plugin"));
-            sendUsage();
+            this.sendUsage();
             return;
         }
 
@@ -107,129 +107,96 @@ public class CheckCommand extends AbstractCommand {
 
         if (args[1] == null) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.specify-plugin"));
-            sendUsage();
+            this.sendUsage();
             return;
         }
 
         if (args[1].equalsIgnoreCase("all") || args[1].equalsIgnoreCase("*")) {
 
-            if (hasPermission("all")) {
-
-                sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.header"));
-
-                ThreadUtil.async(new Runnable() {
-
-                    @Override
-                    public void run() {
-
-                        Map<String, UpdateResult> results = UpdateUtil.checkUpToDate();
-
-                        final StringBuilder upToDate = new StringBuilder(), outOfDate = new StringBuilder(), unknown = new StringBuilder();
-
-                        for (Map.Entry<String, UpdateResult> entry : results.entrySet()) {
-
-                            UpdateResult.ResultType result = entry.getValue().getType();
-
-                            String currentVersion = Bukkit.getPluginManager().getPlugin(entry.getKey()).getDescription().getVersion();
-
-                            if (result == UpdateResult.ResultType.UP_TO_DATE) {
-                                upToDate.append(entry.getKey()).append("(").append(currentVersion).append(") ");
-                            } else if (result == UpdateResult.ResultType.INVALID_PLUGIN || result == UpdateResult.ResultType.NOT_INSTALLED) {
-                                unknown.append(entry.getKey()).append("(").append(currentVersion).append(") ");
-                            } else {
-                                outOfDate.append(entry.getKey()).append("(").append(currentVersion).append(" -> ").append(entry.getValue().getLatestVersion()).append(") ");
-                            }
-
-                        }
-
-                        if (toFile) {
-
-                            File outFile = new File(PlugMan.getInstance().getDataFolder(), "updates.txt");
-
-                            PrintWriter writer = null;
-
-                            try {
-
-                                writer = new PrintWriter(outFile);
-
-                                writer.println("Up-to-date (Installed):");
-                                writer.println(upToDate);
-
-                                writer.println("Out-of-date (Installed -> Latest):");
-                                writer.println(outOfDate);
-
-                                writer.println("Unknown (Installed):");
-                                writer.println(unknown);
-
-                            } catch (IOException ignored) {
-
-                            } finally {
-                                if (writer != null) {
-                                    writer.close();
-                                }
-                            }
-
-                            sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.file-done", outFile.getPath()));
-
-                        } else {
-
-                            ThreadUtil.sync(new Runnable() {
-                                @Override
-                                public void run() {
-                                    sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.up-to-date-player", upToDate.toString()));
-                                    sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.out-of-date-player", outOfDate.toString()));
-                                    sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.unknown-player", unknown.toString()));
-                                }
-                            });
-
-                        }
-
-                    }
-
-                });
-
-
-            } else {
+            if (!this.hasPermission("all")) {
                 sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.no-permission"));
+                return;
             }
 
-            return;
+            sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.header"));
 
+            ThreadUtil.async(() -> {
+                Map<String, UpdateResult> results = UpdateUtil.checkUpToDate();
+
+                final StringBuilder upToDate = new StringBuilder(), outOfDate = new StringBuilder(), unknown = new StringBuilder();
+
+                for (Map.Entry<String, UpdateResult> entry : results.entrySet()) {
+
+                    UpdateResult.ResultType result = entry.getValue().getType();
+
+                    String currentVersion = Bukkit.getPluginManager().getPlugin(entry.getKey()).getDescription().getVersion();
+
+                    if (result == UpdateResult.ResultType.UP_TO_DATE)
+                        upToDate.append(entry.getKey()).append("(").append(currentVersion).append(") ");
+                    else if (result == UpdateResult.ResultType.INVALID_PLUGIN || result == UpdateResult.ResultType.NOT_INSTALLED)
+                        unknown.append(entry.getKey()).append("(").append(currentVersion).append(") ");
+                    else
+                        outOfDate.append(entry.getKey())
+                                 .append("(")
+                                 .append(currentVersion)
+                                 .append(" -> ")
+                                 .append(entry.getValue().getLatestVersion())
+                                 .append(") ");
+
+                }
+
+                if (!toFile) {
+                    ThreadUtil.sync(() -> {
+                        sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.up-to-date-player", upToDate.toString()));
+                        sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.out-of-date-player", outOfDate.toString()));
+                        sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.unknown-player", unknown.toString()));
+                    });
+                    return;
+                }
+
+                File outFile = new File(PlugMan.getInstance().getDataFolder(), "updates.txt");
+
+                try (PrintWriter writer = new PrintWriter(outFile)) {
+                    writer.println("Up-to-date (Installed):");
+                    writer.println(upToDate);
+
+                    writer.println("Out-of-date (Installed -> Latest):");
+                    writer.println(outOfDate);
+
+                    writer.println("Unknown (Installed):");
+                    writer.println(unknown);
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
+
+                sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.file-done", outFile.getPath()));
+            });
+
+            return;
         }
 
         final String pluginName = StringUtil.consolidateStrings(args, 1).replaceAll(" ", "+").replace("-[a-zA-Z]", "").replace("+null", "");
 
         sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.header"));
 
-        ThreadUtil.async(new Runnable() {
+        ThreadUtil.async(() -> {
+            final UpdateResult result = UpdateUtil.checkUpToDate(pluginName);
 
-            @Override
-            public void run() {
-
-                final UpdateResult result = UpdateUtil.checkUpToDate(pluginName);
-
-                ThreadUtil.sync(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        switch (result.getType()) {
-                            case NOT_INSTALLED:
-                                sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.not-found", result.getLatestVersion()));
-                                break;
-                            case OUT_OF_DATE:
-                                sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.out-of-date", result.getCurrentVersion(), result.getLatestVersion()));
-                                break;
-                            case UP_TO_DATE:
-                                sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.up-to-date", result.getCurrentVersion()));
-                                break;
-                            default:
-                                sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.not-found-spigot"));
-                        }
-                    }
-
-                });
-
-            }
+            ThreadUtil.sync(() -> {
+                switch (result.getType()) {
+                    case NOT_INSTALLED:
+                        sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.not-found", result.getLatestVersion()));
+                        break;
+                    case OUT_OF_DATE:
+                        sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.out-of-date", result.getCurrentVersion(), result.getLatestVersion()));
+                        break;
+                    case UP_TO_DATE:
+                        sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.up-to-date", result.getCurrentVersion()));
+                        break;
+                    default:
+                        sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("check.not-found-spigot"));
+                }
+            });
 
         });
 

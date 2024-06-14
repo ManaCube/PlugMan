@@ -82,26 +82,26 @@ public class RestartCommand extends AbstractCommand {
      */
     @Override
     public void execute(CommandSender sender, Command command, String label, String[] args) {
-
-        if (!hasPermission()) {
+        if (!this.hasPermission()) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.no-permission"));
             return;
         }
 
         if (args.length < 2) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.specify-plugin"));
-            sendUsage();
+            this.sendUsage();
             return;
         }
 
         if (args[1].equalsIgnoreCase("all") || args[1].equalsIgnoreCase("*")) {
-            if (hasPermission("all")) {
-                PlugMan.getInstance().getPluginUtil().disableAll();
-                PlugMan.getInstance().getPluginUtil().enableAll();
-                sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("restart.all"));
-            } else {
+            if (!this.hasPermission("all")) {
                 sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.no-permission"));
+                return;
             }
+
+            PlugMan.getInstance().getPluginUtil().disableAll();
+            PlugMan.getInstance().getPluginUtil().enableAll();
+            sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("restart.all"));
             return;
         }
 
@@ -109,7 +109,7 @@ public class RestartCommand extends AbstractCommand {
 
         if (target == null) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.invalid-plugin"));
-            sendUsage();
+            this.sendUsage();
             return;
         }
 

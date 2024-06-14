@@ -53,7 +53,6 @@ help:
   disable: '&7- &a/plugman disable <plugin|all> &f- &7Disable a plugin.'
   restart: '&7- &a/plugman restart <plugin|all> &f- &7Restart a plugin.'
   load: '&7- &a/plugman load <plugin> &f- &7Load a plugin.'
-  download: '&7- &c/plugman download <direct|spigot> <ID|URL> &f- &7Download and load a plugin.'
   reload: '&7- &a/plugman reload <plugin|all> &f- &7Reload a plugin.'
   unload: '&7- &a/plugman unload <plugin> &f- &7Unload a plugin.'
   check: '&7- &a/plugman check <plugin|all> [-f] &f- &7Check if a plugin is up-to-date (-f dumps to file for all).'
@@ -74,12 +73,6 @@ load:
   invalid-plugin: '&cThat file is not a valid plugin.'
   loaded: '&9{0} has been loaded and enabled.'
   plugin-dir: '&cPlugin directory not found.'
-download:
-  invalid-id: '&cPlugin ID must be a number.'
-  invalid-type: '&cPlugin type must be either "direct" or "spigot".'
-  invalid-url: '&cYou must specify a valid URL that starts with http:// or https://.'
-  malformed-url: '&cSpecified URL is malformed.'
-  download-failed: '&cDownload failed. Check console for more information'
 depends:
     header: '&7Plugins that depend on &9{0}&7: {1}'
     none: '&7No plugins depend on &9{0}&7, reloading should be safe.'

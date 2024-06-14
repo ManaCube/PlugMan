@@ -37,9 +37,8 @@ public class CurseForgeUtil {
      */
     public static Map<String, UpdateResult> checkUpToDate() {
         Map<String, UpdateResult> results = new TreeMap<>();
-        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+        for (Plugin plugin : Bukkit.getPluginManager().getPlugins())
             results.put(plugin.getName(), checkUpToDate(plugin.getName()));
-        }
         return results;
     }
 
@@ -62,19 +61,16 @@ public class CurseForgeUtil {
     public static UpdateResult checkUpToDate(String pluginName, Long pluginId) {
         boolean idSpecified = pluginId != null;
 
-        if (!idSpecified) {
+        if (!idSpecified)
             pluginId = CurseForgeUtil.getPluginId(pluginName);
-        }
 
         if (pluginId < 0) {
             Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
-            if (plugin == null) {
-                if (idSpecified) {
+            if (plugin == null)
+                if (idSpecified)
                     return new UpdateResult(UpdateResult.ResultType.INVALID_PLUGIN, pluginName);
-                } else {
+                else
                     return new UpdateResult(UpdateResult.ResultType.NOT_INSTALLED);
-                }
-            }
             return new UpdateResult(UpdateResult.ResultType.INVALID_PLUGIN, plugin.getDescription().getVersion());
         }
 
@@ -82,34 +78,28 @@ public class CurseForgeUtil {
 
         if (versions == null || versions.size() == 0) {
             Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
-            if (plugin == null) {
-                if (idSpecified) {
+            if (plugin == null)
+                if (idSpecified)
                     return new UpdateResult(UpdateResult.ResultType.INVALID_PLUGIN, pluginName);
-                } else {
+                else
                     return new UpdateResult(UpdateResult.ResultType.NOT_INSTALLED);
-                }
-            }
             return new UpdateResult(UpdateResult.ResultType.INVALID_PLUGIN, plugin.getDescription().getVersion());
         }
 
         JSONObject latest = (JSONObject) versions.get(versions.size() - 1);
 
         String currentVersion = PlugMan.getInstance().getPluginUtil().getPluginVersion(pluginName);
-        if (!(Bukkit.getPluginManager().getPlugin(pluginName) instanceof JavaPlugin)) {
-            if (idSpecified) {
+        if (!(Bukkit.getPluginManager().getPlugin(pluginName) instanceof JavaPlugin))
+            if (idSpecified)
                 return new UpdateResult(UpdateResult.ResultType.INVALID_PLUGIN, currentVersion);
-            } else {
+            else
                 return new UpdateResult(UpdateResult.ResultType.INVALID_PLUGIN, currentVersion, "null");
-            }
-        }
         JavaPlugin plugin = (JavaPlugin) Bukkit.getPluginManager().getPlugin(pluginName);
-        if (plugin == null) {
-            if (idSpecified) {
+        if (plugin == null)
+            if (idSpecified)
                 return new UpdateResult(UpdateResult.ResultType.NOT_INSTALLED, currentVersion);
-            } else {
+            else
                 return new UpdateResult(UpdateResult.ResultType.NOT_INSTALLED, currentVersion, "null");
-            }
-        }
         String latestVersion = (String) latest.get("md5");
         HashCode currentPluginHashCode;
 
@@ -124,24 +114,21 @@ public class CurseForgeUtil {
             return new UpdateResult(UpdateResult.ResultType.INVALID_PLUGIN, currentVersion, latestVersion);
         }
 
-        if (latestVersion == null) {
+        if (latestVersion == null)
             return new UpdateResult(UpdateResult.ResultType.INVALID_PLUGIN, currentVersion, latestVersion);
-        }
 
         latestVersion = (String) latest.get("name");
 
-        if (currentVersion == null) {
+        if (currentVersion == null)
             return new UpdateResult(UpdateResult.ResultType.NOT_INSTALLED, currentVersion, latestVersion);
-        } else if (latestVersion == null) {
+        else if (latestVersion == null)
             return new UpdateResult(UpdateResult.ResultType.INVALID_PLUGIN, currentVersion, latestVersion);
-        }
 
         Boolean isActual = UpdateUtil.isActualVersion(currentVersion, latestVersion);
-        if (isActual != null && isActual) {
+        if (isActual != null && isActual)
             return new UpdateResult(UpdateResult.ResultType.UP_TO_DATE, currentVersion, latestVersion);
-        } else {
+        else
             return new UpdateResult(UpdateResult.ResultType.OUT_OF_DATE, currentVersion, latestVersion);
-        }
 
     }
 
@@ -169,12 +156,11 @@ public class CurseForgeUtil {
 
                 JSONArray array = (JSONArray) JSONValue.parse(body);
 
-                for (int i = 0; i < array.size(); i++) {
-                    JSONObject json = (JSONObject) array.get(i);
+                for (Object o : array) {
+                    JSONObject json = (JSONObject) o;
                     String pluginName = (String) json.get("slug");
-                    if (name.equalsIgnoreCase(pluginName)) {
+                    if (name.equalsIgnoreCase(pluginName))
                         return (long) json.get("id");
-                    }
                 }
 
             }

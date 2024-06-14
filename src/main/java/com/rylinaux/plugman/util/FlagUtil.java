@@ -48,15 +48,14 @@ public class FlagUtil {
      */
     public static boolean hasFlag(String[] args, char flag) {
 
-        List<String> list = new ArrayList(Arrays.asList(args));
+        List<String> list = new ArrayList<>(Arrays.asList(args));
 
-        for (Iterator<String> it = list.iterator(); it.hasNext();) {
+        for (Iterator<String> it = list.iterator(); it.hasNext();)
             if (it.next().equalsIgnoreCase("-" + flag)) {
                 it.remove();
                 args = list.toArray(args);
                 return true;
             }
-        }
 
         return false;
 

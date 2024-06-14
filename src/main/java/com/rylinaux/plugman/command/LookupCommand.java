@@ -84,15 +84,14 @@ public class LookupCommand extends AbstractCommand {
      */
     @Override
     public void execute(CommandSender sender, Command command, String label, String[] args) {
-
-        if (!hasPermission()) {
+        if (!this.hasPermission()) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.no-permission"));
             return;
         }
 
         if (args.length < 2) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.specify-command"));
-            sendUsage();
+            this.sendUsage();
             return;
         }
 
@@ -105,7 +104,7 @@ public class LookupCommand extends AbstractCommand {
             return;
         }
 
-        sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("lookup.found", commandName, Joiner.on(", ").join(plugins)));
-
+        sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("lookup.found", commandName,
+                                                                              Joiner.on(", ").join(plugins)));
     }
 }

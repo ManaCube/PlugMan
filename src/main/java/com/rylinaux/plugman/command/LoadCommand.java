@@ -83,7 +83,6 @@ public class LoadCommand extends AbstractCommand {
      */
     @Override
     public void execute(CommandSender sender, Command command, String label, String[] args) {
-
         if (!this.hasPermission()) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.no-permission"));
             return;
@@ -95,9 +94,8 @@ public class LoadCommand extends AbstractCommand {
             return;
         }
 
-        for (int i = 1; i < args.length; i++) {
+        for (int i = 1; i < args.length; i++)
             args[i] = args[i].replaceAll("[/\\\\]", "");
-        }
 
         Plugin potential = PlugMan.getInstance().getPluginUtil().getPluginByName(args, 1);
 
@@ -114,6 +112,5 @@ public class LoadCommand extends AbstractCommand {
         }
 
         sender.sendMessage(PlugMan.getInstance().getPluginUtil().load(name));
-
     }
 }

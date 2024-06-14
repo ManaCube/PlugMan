@@ -5,7 +5,6 @@
 ###
 ignored-plugins: [PlugMan,PlugManX,ViaVersion,ViaBackwards,ViaRewind,ProtocolSupport,ProtocolLib]
 notify-on-broken-command-removal: true
-disable-download-command: true
 auto-load:
   enabled: false
   check-every-seconds: 10
@@ -16,4 +15,4 @@ auto-reload:
   enabled: false
   check-every-seconds: 10
 # Do not change this value
-version: 1
+version: 2

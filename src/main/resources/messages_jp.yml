@@ -52,7 +52,6 @@ help:
   disable: '&7- &a/plugman disable <プラグイン名|all> &f- &7プラグインを無効化します。'
   restart: '&7- &a/plugman restart <プラグイン名|all> &f- &7プラグインを再起動します。'
   load: '&7- &a/plugman load <プラグイン名> &f- &7プラグインを読み込みます。'
-  download: '&7- &a/plugman download <direct|spigot> <ID|URL> &f- &7プラグインをダウンロードしてロードします。'
   reload: '&7- &a/plugman reload <plugin|all> &f- &7プラグインをリロードします。'
   unload: '&7- &a/plugman unload <plugin> &f- &7プラグインをアンロードします。'
   check: '&7- &a/plugman check <plugin|all> [-f] &f- &7プラグインが最新かどうかを確認します（-fはすべてのプラグインをファイルにダンプします）。'
@@ -72,12 +71,6 @@ load:
   invalid-plugin: '&cそのファイルは有効なプラグインではありません。'
   loaded: '&9{0} がロードされ、有効になりました。'
   plugin-dir: '&cプラグインディレクトリが見つかりません。'
-download:
-  invalid-id: '&cプラグインIDは数字でなければなりません。'
-  invalid-type: '&cプラグインタイプは "direct" または "spigot" のいずれかである必要があります。'
-  invalid-url: '&c有効なURLを指定する必要があります。URLは http:// または https:// で始まります。'
-  malformed-url: '&c指定したURLが正しくありません。'
-  download-failed: '&cダウンロードに失敗しました。詳細はコンソールを確認してください。'
 lookup:
   found: '&9/{0} は {1} に登録されています。'
   not-found: '&cコマンド "/{0}" はどの plugin.yml にも登録されていません。'

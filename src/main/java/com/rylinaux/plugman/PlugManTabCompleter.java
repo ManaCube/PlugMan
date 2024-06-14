@@ -74,12 +74,14 @@ public class PlugManTabCompleter implements TabCompleter {
                 List<String> files = new ArrayList<>();
                 String partialPlugin = args[1];
 
-                for (File pluginFile : new File("plugins").listFiles()) {
+                for (File pluginFile : new File("plugins").listFiles())
                     try {
-                        if (pluginFile.isDirectory()) continue;
+                        if (pluginFile.isDirectory())
+                            continue;
 
                         if (!pluginFile.getName().toLowerCase().endsWith(".jar"))
-                            if (!new File("plugins", pluginFile.getName() + ".jar").exists()) continue;
+                            if (!new File("plugins", pluginFile.getName() + ".jar").exists())
+                                continue;
 
                         JarFile jarFile = null;
                         try {
@@ -89,7 +91,8 @@ public class PlugManTabCompleter implements TabCompleter {
                             continue;
                         }
 
-                        if (jarFile.getEntry("plugin.yml") == null) continue;
+                        if (jarFile.getEntry("plugin.yml") == null)
+                            continue;
 
                         InputStream stream;
                         try {
@@ -99,7 +102,8 @@ public class PlugManTabCompleter implements TabCompleter {
                             continue;
                         }
 
-                        if (stream == null) continue;
+                        if (stream == null)
+                            continue;
 
                         PluginDescriptionFile descriptionFile = null;
                         try {
@@ -116,7 +120,6 @@ public class PlugManTabCompleter implements TabCompleter {
                                 files.remove(pluginFile.getName().substring(0, pluginFile.getName().length() - ".jar".length()));
                     } catch (Exception ignored) {
                     }
-                }
 
                 StringUtil.copyPartialMatches(partialPlugin, files, completions);
             } else if (args[0].equalsIgnoreCase("lookup")) {

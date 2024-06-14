@@ -11,9 +11,9 @@ import net.md_5.bungee.api.plugin.TabExecutor;
 import java.util.*;
 
 public class PlugManBungeeCommand extends Command implements TabExecutor {
-    private LoadCommand loadCommand;
-    private UnloadCommand unloadCommand;
-    private ReloadCommand reloadCommand;
+    private final LoadCommand loadCommand;
+    private final UnloadCommand unloadCommand;
+    private final ReloadCommand reloadCommand;
 
     public PlugManBungeeCommand() {
         super("plugmanbungee", "plugman.use");

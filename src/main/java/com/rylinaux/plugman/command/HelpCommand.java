@@ -82,18 +82,18 @@ public class HelpCommand extends AbstractCommand {
      */
     @Override
     public void execute(CommandSender sender, Command command, String label, String[] args) {
-
-        if (!hasPermission()) {
+        if (!this.hasPermission()) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.no-permission"));
             return;
         }
 
         ConfigurationSection help = PlugMan.getInstance().getMessageFormatter().getMessageFile().getConfig().getConfigurationSection("help");
 
-        for (String s : help.getKeys(false)) {
-            if (sender.hasPermission("plugman." + s) || s.equalsIgnoreCase("header"))
-                sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format(false, help.getName() + "." + s));
-        }
+        for (String section : help.getKeys(false)) {
+            if (!section.equalsIgnoreCase("header") && !sender.hasPermission("plugman." + section))
+                continue;
 
+            sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format(false, help.getName() + "." + section));
+        }
     }
 }

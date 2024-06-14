@@ -18,9 +18,8 @@ public class UpdateUtil {
      */
     public static Map<String, UpdateResult> checkUpToDate() {
         Map<String, UpdateResult> results = new TreeMap<>();
-        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+        for (Plugin plugin : Bukkit.getPluginManager().getPlugins())
             results.put(plugin.getName(), checkUpToDate(plugin.getName()));
-        }
         return results;
     }
 
@@ -34,11 +33,10 @@ public class UpdateUtil {
         if (PlugMan.getInstance().getResourceMap().containsKey(pluginName.toLowerCase(Locale.ROOT))) {
             Map.Entry<Long, Boolean> entry = PlugMan.getInstance().getResourceMap().get(pluginName.toLowerCase(Locale.ROOT));
 
-            if (entry.getValue()) {
+            if (entry.getValue())
                 return SpiGetUtil.checkUpToDate(pluginName, entry.getKey());
-            } else {
+            else
                 return CurseForgeUtil.checkUpToDate(pluginName, entry.getKey());
-            }
         }
 
         long id = SpiGetUtil.getPluginId(pluginName);
@@ -46,9 +44,8 @@ public class UpdateUtil {
             id = CurseForgeUtil.getPluginId(pluginName);
             if (id < 0) {
                 Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
-                if (plugin == null) {
+                if (plugin == null)
                     return new UpdateResult(UpdateResult.ResultType.INVALID_PLUGIN, pluginName);
-                }
                 return new UpdateResult(UpdateResult.ResultType.INVALID_PLUGIN, plugin.getDescription().getVersion());
             }
             return CurseForgeUtil.checkUpToDate(pluginName);
@@ -66,17 +63,15 @@ public class UpdateUtil {
         if (PlugMan.getInstance().getResourceMap().containsKey(name.toLowerCase(Locale.ROOT))) {
             Map.Entry<Long, Boolean> entry = PlugMan.getInstance().getResourceMap().get(name.toLowerCase(Locale.ROOT));
 
-            if (entry.getValue()) {
+            if (entry.getValue())
                 return SpiGetUtil.getPluginId(name);
-            } else {
+            else
                 return CurseForgeUtil.getPluginId(name);
-            }
         }
 
         long id = SpiGetUtil.getPluginId(name);
-        if (id < 0) {
+        if (id < 0)
             id = CurseForgeUtil.getPluginId(name);
-        }
         return id;
 
     }
@@ -88,20 +83,16 @@ public class UpdateUtil {
      * @return the JSON encoded data.
      */
     public static JSONArray getPluginVersions(long id) {
-        for (Map.Entry<Long, Boolean> entry : PlugMan.getInstance().getResourceMap().values()) {
-            if (entry.getKey() == id) {
-                if (entry.getValue()) {
+        for (Map.Entry<Long, Boolean> entry : PlugMan.getInstance().getResourceMap().values())
+            if (entry.getKey() == id)
+                if (entry.getValue())
                     return SpiGetUtil.getPluginVersions(id);
-                } else {
+                else
                     return CurseForgeUtil.getPluginVersions(id);
-                }
-            }
-        }
 
         JSONArray jsonArray = SpiGetUtil.getPluginVersions(id);
-        if (jsonArray == null || jsonArray.size() <= 0) {
+        if (jsonArray == null || jsonArray.size() <= 0)
             return CurseForgeUtil.getPluginVersions(id);
-        }
         return jsonArray;
     }
 
@@ -128,11 +119,10 @@ public class UpdateUtil {
                 int currentValue = CollectionUtil.getElementOrDefault(currentFamily, numberIndex, () -> 0);
                 int latestValue = CollectionUtil.getElementOrDefault(latestFamily, numberIndex, () -> 0);
 
-                if (latestValue > currentValue) {
+                if (latestValue > currentValue)
                     return false;
-                } else if (latestValue < currentValue) {
+                else if (latestValue < currentValue)
                     return true;
-                }
             }
         }
         return true; // Numbers amount equals, numbers values too
@@ -143,9 +133,8 @@ public class UpdateUtil {
         while (matcher.find()) {
             String familyString = matcher.group();
             List<Integer> family = new ArrayList<>();
-            for (String number : familyString.split("\\.")) {
+            for (String number : familyString.split("\\."))
                 family.add(Integer.parseInt(number));
-            }
             result.add(family);
         }
         return result;

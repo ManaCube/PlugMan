@@ -80,9 +80,6 @@ public class PlugManCommandHandler implements CommandExecutor {
             case "load":
                 cmd = new LoadCommand(sender);
                 break;
-            case "download":
-                cmd = new DownloadCommand(sender);
-                break;
             case "reload":
                 cmd = new ReloadCommand(sender);
                 break;

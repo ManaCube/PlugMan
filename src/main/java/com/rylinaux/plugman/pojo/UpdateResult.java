@@ -93,7 +93,7 @@ public class UpdateResult {
      * @return the type of the result.
      */
     public ResultType getType() {
-        return type;
+        return this.type;
     }
 
     /**
@@ -102,7 +102,7 @@ public class UpdateResult {
      * @return the current version of the plugin.
      */
     public String getCurrentVersion() {
-        return currentVersion;
+        return this.currentVersion;
     }
 
     /**
@@ -111,7 +111,7 @@ public class UpdateResult {
      * @return the latest version of the plugin.
      */
     public String getLatestVersion() {
-        return latestVersion;
+        return this.latestVersion;
     }
 
 }

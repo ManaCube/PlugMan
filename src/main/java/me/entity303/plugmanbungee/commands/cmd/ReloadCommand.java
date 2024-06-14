@@ -17,7 +17,7 @@ public class ReloadCommand {
 
     public void execute(CommandSender sender, String[] args) {
         if (args.length <= 0) {
-            sendMessage(sender, "§cSyntax: §4/PlugManBungee reload <Plugin>");
+            this.sendMessage(sender, "§cSyntax: §4/PlugManBungee reload <Plugin>");
             return;
         }
 
@@ -26,13 +26,13 @@ public class ReloadCommand {
         PluginManager pluginManager = ProxyServer.getInstance().getPluginManager();
 
         if (pluginManager.getPlugin(pluginName) == null) {
-            sendMessage(sender, "§cThere is no plugin named §4" + pluginName + "§c!");
+            this.sendMessage(sender, "§cThere is no plugin named §4" + pluginName + "§c!");
             return;
         }
 
         Map.Entry<PluginResult, PluginResult> pluginResults = BungeePluginUtil.reloadPlugin(pluginManager.getPlugin(pluginName));
-        sendMessage(sender, pluginResults.getKey().getMessage());
-        sendMessage(sender, pluginResults.getValue().getMessage());
+        this.sendMessage(sender, pluginResults.getKey().getMessage());
+        this.sendMessage(sender, pluginResults.getValue().getMessage());
     }
 
     private void sendMessage(CommandSender sender, String message) {
@@ -45,11 +45,9 @@ public class ReloadCommand {
 
             List<String> realCompletions = new ArrayList<>();
 
-            for (String com : completions) {
-                if (com.toLowerCase(Locale.ROOT).startsWith(args[0].toLowerCase(Locale.ROOT))) {
+            for (String com : completions)
+                if (com.toLowerCase(Locale.ROOT).startsWith(args[0].toLowerCase(Locale.ROOT)))
                     realCompletions.add(com);
-                }
-            }
 
             return realCompletions.size() > 0 ? realCompletions : completions;
         }

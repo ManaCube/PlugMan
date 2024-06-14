@@ -34,7 +34,6 @@ import org.bukkit.command.CommandSender;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -88,32 +87,22 @@ public class DumpCommand extends AbstractCommand {
      */
     @Override
     public void execute(CommandSender sender, Command command, String label, String[] args) {
-
-        if (!hasPermission()) {
+        if (!this.hasPermission()) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.no-permission"));
             return;
         }
 
         File dumpFile = new File(PlugMan.getInstance().getDataFolder(), "versions.txt");
 
-        PrintWriter writer = null;
-
         List<String> plugins = PlugMan.getInstance().getPluginUtil().getPluginNames(true);
-        Collections.sort(plugins, String.CASE_INSENSITIVE_ORDER);
+        plugins.sort(String.CASE_INSENSITIVE_ORDER);
 
-        try {
-            writer = new PrintWriter(dumpFile);
-            for (String plugin : plugins)
-                writer.println(plugin);
+        try(PrintWriter writer  = new PrintWriter(dumpFile)) {
+            plugins.forEach(writer::println);
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("dump.dumped", dumpFile.getName()));
         } catch (IOException e) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("dump.error"));
             e.printStackTrace();
-        } finally {
-            if (writer != null)
-                writer.close();
         }
-
     }
-
 }

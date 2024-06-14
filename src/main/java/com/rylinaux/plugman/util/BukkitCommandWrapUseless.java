@@ -2,9 +2,9 @@ package com.rylinaux.plugman.util;
 
 import org.bukkit.command.Command;
 
-public class BukkitCommandWrap_Useless extends BukkitCommandWrap {
+public class BukkitCommandWrapUseless extends BukkitCommandWrap {
 
-    public BukkitCommandWrap_Useless() {
+    public BukkitCommandWrapUseless() {
     }
 
     @Override

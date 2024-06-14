@@ -1,4 +1,4 @@
-package com.rylinaux.plugman.util;
+package com.rylinaux.plugman.pluginmanager;
 
 /*
  * #%L
@@ -29,6 +29,8 @@ package com.rylinaux.plugman.util;
 import com.rylinaux.plugman.PlugMan;
 import com.rylinaux.plugman.api.GentleUnload;
 import com.rylinaux.plugman.api.PlugManAPI;
+import com.rylinaux.plugman.util.BukkitCommandWrapUseless;
+import com.rylinaux.plugman.util.StringUtil;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -44,7 +46,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.*;
@@ -59,28 +60,21 @@ import java.util.logging.Logger;
  *
  * @author rylinaux
  */
-public class PaperPluginUtil implements PluginUtil {
+public class PaperPluginManager implements PluginManager {
     //TODO: Clean this class up, I don't like how it currently looks
 
-    private final Class<?> pluginClassLoader;
-    private final Field pluginClassLoaderPlugin;
-    private final BukkitPluginUtil bukkitPluginUtil;
-    private Field commandMapField;
-    private Field knownCommandsField;
-    private String nmsVersion = null;
+    private final BukkitPluginManager _bukkitPluginManager;
 
-    {
+    public PaperPluginManager(BukkitPluginManager bukkitPluginManager) {
+        this._bukkitPluginManager = bukkitPluginManager;
+
         try {
-            this.pluginClassLoader = Class.forName("org.bukkit.plugin.java.PluginClassLoader");
-            this.pluginClassLoaderPlugin = this.pluginClassLoader.getDeclaredField("plugin");
-            this.pluginClassLoaderPlugin.setAccessible(true);
+            Class<?> pluginClassLoader = Class.forName("org.bukkit.plugin.java.PluginClassLoader");
+            Field pluginClassLoaderPlugin = pluginClassLoader.getDeclaredField("plugin");
+            pluginClassLoaderPlugin.setAccessible(true);
         } catch (ClassNotFoundException | NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public PaperPluginUtil(BukkitPluginUtil bukkitPluginUtil) {
-        this.bukkitPluginUtil = bukkitPluginUtil;
     }
 
     //TODO: Make it look better
@@ -135,18 +129,6 @@ public class PaperPluginUtil implements PluginUtil {
     }
 
     /**
-     * Download a plugin from a URL.
-     *
-     * @param url the URL to download from
-     * @return downloaded plugin
-     * @throws IOException if an error occurs
-     */
-    @Override
-    public File download(URL url) throws IOException {
-        return this.bukkitPluginUtil.download(url);
-    }
-
-    /**
      * Enable a plugin.
      * Currently unsupported, probably needs fixing
      *
@@ -154,7 +136,7 @@ public class PaperPluginUtil implements PluginUtil {
      */
     @Override
     public void enable(Plugin plugin) {
-        this.bukkitPluginUtil.enable(plugin);
+        this._bukkitPluginManager.enable(plugin);
     }
 
     /**
@@ -176,7 +158,7 @@ public class PaperPluginUtil implements PluginUtil {
      */
     @Override
     public void disable(Plugin plugin) {
-        this.bukkitPluginUtil.disable(plugin);
+        this._bukkitPluginManager.disable(plugin);
     }
 
     /**
@@ -210,7 +192,7 @@ public class PaperPluginUtil implements PluginUtil {
      */
     @Override
     public String getFormattedName(Plugin plugin, boolean includeVersions) {
-        return this.bukkitPluginUtil.getFormattedName(plugin, includeVersions);
+        return this._bukkitPluginManager.getFormattedName(plugin, includeVersions);
     }
 
     /**
@@ -233,7 +215,7 @@ public class PaperPluginUtil implements PluginUtil {
      */
     @Override
     public Plugin getPluginByName(String name) {
-        return this.bukkitPluginUtil.getPluginByName(name);
+        return this._bukkitPluginManager.getPluginByName(name);
     }
 
     /**
@@ -243,7 +225,7 @@ public class PaperPluginUtil implements PluginUtil {
      */
     @Override
     public List<String> getPluginNames(boolean fullName) {
-        return this.bukkitPluginUtil.getPluginNames(fullName);
+        return this._bukkitPluginManager.getPluginNames(fullName);
     }
 
     /**
@@ -253,7 +235,7 @@ public class PaperPluginUtil implements PluginUtil {
      */
     @Override
     public List<String> getDisabledPluginNames(boolean fullName) {
-        return this.bukkitPluginUtil.getDisabledPluginNames(fullName);
+        return this._bukkitPluginManager.getDisabledPluginNames(fullName);
     }
 
     /**
@@ -263,7 +245,7 @@ public class PaperPluginUtil implements PluginUtil {
      */
     @Override
     public List<String> getEnabledPluginNames(boolean fullName) {
-        return this.bukkitPluginUtil.getEnabledPluginNames(fullName);
+        return this._bukkitPluginManager.getEnabledPluginNames(fullName);
     }
 
     /**
@@ -274,7 +256,7 @@ public class PaperPluginUtil implements PluginUtil {
      */
     @Override
     public String getPluginVersion(String name) {
-        return this.bukkitPluginUtil.getPluginVersion(name);
+        return this._bukkitPluginManager.getPluginVersion(name);
     }
 
     /**
@@ -286,7 +268,7 @@ public class PaperPluginUtil implements PluginUtil {
      */
     @Override
     public String getUsages(Plugin plugin) {
-        return this.bukkitPluginUtil.getUsages(plugin);
+        return this._bukkitPluginManager.getUsages(plugin);
     }
 
     /**
@@ -298,7 +280,7 @@ public class PaperPluginUtil implements PluginUtil {
      */
     @Override
     public List<String> findByCommand(String command) {
-        return this.bukkitPluginUtil.findByCommand(command);
+        return this._bukkitPluginManager.findByCommand(command);
     }
 
     /**
@@ -320,7 +302,7 @@ public class PaperPluginUtil implements PluginUtil {
      */
     @Override
     public boolean isIgnored(String plugin) {
-        return this.bukkitPluginUtil.isIgnored(plugin);
+        return this._bukkitPluginManager.isIgnored(plugin);
     }
 
     public PluginDescriptionFile getPluginDescription(File file) throws InvalidDescriptionException {
@@ -439,7 +421,7 @@ public class PaperPluginUtil implements PluginUtil {
             Bukkit.getPluginManager().enablePlugin(target);
         }
 
-        if (!(PlugMan.getInstance().getBukkitCommandWrap() instanceof BukkitCommandWrap_Useless)) {
+        if (!(PlugMan.getInstance().getBukkitCommandWrap() instanceof BukkitCommandWrapUseless)) {
             Plugin finalTarget = target;
 
             if (this.isFolia()) {
@@ -459,60 +441,22 @@ public class PaperPluginUtil implements PluginUtil {
     }
 
     private void loadCommands(Plugin target) {
-        this.bukkitPluginUtil.loadCommands(target);
+        this._bukkitPluginManager.loadCommands(target);
     }
 
-    private void unloadCommands(Plugin target) {
-        this.bukkitPluginUtil.unloadCommands(target);
+    protected void unloadCommands(Plugin target) {
+        this._bukkitPluginManager.unloadCommands(target);
     }
 
     @Override
     public Map<String, Command> getKnownCommands() {
-        if (this.commandMapField == null) try {
-            this.commandMapField = Class.forName("org.bukkit.craftbukkit." + this.getNmsVersion() + ".CraftServer").getDeclaredField("commandMap");
-            this.commandMapField.setAccessible(true);
-        } catch (NoSuchFieldException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
-        SimpleCommandMap commandMap;
-        try {
-            commandMap = (SimpleCommandMap) this.commandMapField.get(Bukkit.getServer());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        if (this.knownCommandsField == null) try {
-            this.knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
-            this.knownCommandsField.setAccessible(true);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        Map<String, Command> knownCommands;
-
-        try {
-            knownCommands = (Map<String, Command>) this.knownCommandsField.get(commandMap);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        return knownCommands;
+        return this._bukkitPluginManager.getKnownCommands();
     }
 
-    private String getNmsVersion() {
-        if (this.nmsVersion == null) try {
-            this.nmsVersion = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
-            this.nmsVersion = null;
-        }
-        return this.nmsVersion;
+    @Override
+    public void setKnownCommands(Map<String, Command> knownCommands) {
+        this._bukkitPluginManager.setKnownCommands(knownCommands);
     }
-
 
     /**
      * Reload a plugin.
@@ -547,11 +491,15 @@ public class PaperPluginUtil implements PluginUtil {
     public String unload(Plugin plugin) {
         String name = plugin.getName();
 
-        if (!PlugManAPI.getGentleUnloads().containsKey(plugin)) {
-            if (!(PlugMan.getInstance().getBukkitCommandWrap() instanceof BukkitCommandWrap_Useless))
+        if (PlugManAPI.getGentleUnloads().containsKey(plugin)) {
+            GentleUnload gentleUnload = PlugManAPI.getGentleUnloads().get(plugin);
+            if (!gentleUnload.askingForGentleUnload())
+                return name + "did not want to unload";
+        } else {
+            if (!(PlugMan.getInstance().getBukkitCommandWrap() instanceof BukkitCommandWrapUseless))
                 this.unloadCommands(plugin);
 
-            PluginManager pluginManager = Bukkit.getPluginManager();
+            org.bukkit.plugin.PluginManager pluginManager = Bukkit.getPluginManager();
 
             SimpleCommandMap commandMap = null;
 
@@ -567,7 +515,6 @@ public class PaperPluginUtil implements PluginUtil {
                 pluginManager.disablePlugin(plugin);
 
                 try {
-
                     Field pluginsField = Bukkit.getPluginManager().getClass().getDeclaredField("plugins");
                     pluginsField.setAccessible(true);
                     plugins = (List<Plugin>) pluginsField.get(pluginManager);
@@ -605,79 +552,45 @@ public class PaperPluginUtil implements PluginUtil {
                 for (SortedSet<RegisteredListener> set : listeners.values())
                     set.removeIf(value -> value.getPlugin() == plugin);
 
-            if (commandMap != null)
-                for (Iterator<Map.Entry<String, Command>> it = commands.entrySet().iterator(); it.hasNext(); ) {
-                    Map.Entry<String, Command> entry = it.next();
+            if (commandMap != null) {
+                Map<String, Command> modifiedKnownCommands = new HashMap<>(commands);
+
+                for (Map.Entry<String, Command> entry : new HashMap<>(commands).entrySet()) {
                     if (entry.getValue() instanceof PluginCommand) {
                         PluginCommand c = (PluginCommand) entry.getValue();
                         if (c.getPlugin() == plugin) {
                             c.unregister(commandMap);
-                            it.remove();
+                            modifiedKnownCommands.remove(entry.getKey());
                         }
-                    } else try {
-                        Field pluginField = Arrays.stream(entry.getValue().getClass().getDeclaredFields()).filter(field -> Plugin.class.isAssignableFrom(field.getType())).findFirst().orElse(null);
-                        if (pluginField != null) {
-                            Plugin owningPlugin;
-                            try {
-                                pluginField.setAccessible(true);
-                                owningPlugin = (Plugin) pluginField.get(entry.getValue());
-                                if (owningPlugin.getName().equalsIgnoreCase(plugin.getName())) {
-                                    entry.getValue().unregister(commandMap);
-                                    it.remove();
-                                }
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        continue;
+                    }
+
+                    try {
+                        this._bukkitPluginManager.unregisterNonPluginCommands(plugin, commandMap, modifiedKnownCommands, entry);
                     } catch (IllegalStateException e) {
                         if (e.getMessage().equalsIgnoreCase("zip file closed")) {
                             if (PlugMan.getInstance().isNotifyOnBrokenCommandRemoval())
-                                Logger.getLogger(PaperPluginUtil.class.getName()).info("Removing broken command '" + entry.getValue().getName() + "'!");
+                                Logger.getLogger(PaperPluginManager.class.getName()).info("Removing broken command '" + entry.getValue().getName() + "'!");
                             entry.getValue().unregister(commandMap);
-                            it.remove();
+                            modifiedKnownCommands.remove(entry.getKey());
                         }
                     }
                 }
 
-            if (plugins != null && plugins.contains(plugin))
+                this.setKnownCommands(modifiedKnownCommands);
+            }
+
+            if (plugins != null)
                 plugins.remove(plugin);
 
-            if (names != null && names.containsKey(name))
+            if (names != null)
                 names.remove(name);
-        } else {
-            GentleUnload gentleUnload = PlugManAPI.getGentleUnloads().get(plugin);
-            if (!gentleUnload.askingForGentleUnload())
-                return name + "did not want to unload";
         }
 
         // Attempt to close the classloader to unlock any handles on the plugin's jar file.
-        ClassLoader cl = plugin.getClass().getClassLoader();
-        if (cl instanceof URLClassLoader) {
-            try {
-
-                Field pluginField = cl.getClass().getDeclaredField("plugin");
-                pluginField.setAccessible(true);
-                pluginField.set(cl, null);
-
-                Field pluginInitField = cl.getClass().getDeclaredField("pluginInit");
-                pluginInitField.setAccessible(true);
-                pluginInitField.set(cl, null);
-
-            } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
-                Logger.getLogger(PaperPluginUtil.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            try {
-
-                ((URLClassLoader) cl).close();
-            } catch (IOException ex) {
-                Logger.getLogger(PaperPluginUtil.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-        }
+        this.closeClassLoader(plugin);
 
         try {
-
             Class paper = Class.forName("io.papermc.paper.plugin.manager.PaperPluginManagerImpl");
             Object paperPluginManagerImpl = paper.getMethod("getInstance").invoke(null);
 
@@ -708,6 +621,29 @@ public class PaperPluginUtil implements PluginUtil {
         System.gc();
 
         return PlugMan.getInstance().getMessageFormatter().format("unload.unloaded", name);
+    }
+
+    protected void closeClassLoader(Plugin plugin) {
+        ClassLoader classLoader = plugin.getClass().getClassLoader();
+        if (!(classLoader instanceof URLClassLoader)) return;
+
+        try {
+            Field pluginField = classLoader.getClass().getDeclaredField("plugin");
+            pluginField.setAccessible(true);
+            pluginField.set(classLoader, null);
+
+            Field pluginInitField = classLoader.getClass().getDeclaredField("pluginInit");
+            pluginInitField.setAccessible(true);
+            pluginInitField.set(classLoader, null);
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
+            Logger.getLogger(PaperPluginManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try {
+            ((URLClassLoader) classLoader).close();
+        } catch (IOException ex) {
+            Logger.getLogger(PaperPluginManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 }
