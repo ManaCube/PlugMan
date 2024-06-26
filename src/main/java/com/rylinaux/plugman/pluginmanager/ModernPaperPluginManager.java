@@ -38,6 +38,8 @@ public class ModernPaperPluginManager extends PaperPluginManager {
             Map<String, Plugin> names;
             Map<String, Command> commands;
             Map<Event, SortedSet<RegisteredListener>> listeners = null;
+            Map<String, Object> lookupNames;
+            List<Plugin> pluginList;
             boolean reloadlisteners = true;
 
             pluginManager.disablePlugin(plugin);
@@ -51,14 +53,12 @@ public class ModernPaperPluginManager extends PaperPluginManager {
 
                 Field lookupNamesField = instanceManager.getClass().getDeclaredField("lookupNames");
                 lookupNamesField.setAccessible(true);
-                Map<String, Object> lookupNames = (Map<String, Object>) lookupNamesField.get(instanceManager);
+                lookupNames = (Map<String, Object>) lookupNamesField.get(instanceManager);
 
-                lookupNames.remove(plugin.getName().toLowerCase());
 
                 Field pluginsField = instanceManager.getClass().getDeclaredField("plugins");
                 pluginsField.setAccessible(true);
-                List<Plugin> pluginList = (List<Plugin>) pluginsField.get(instanceManager);
-                pluginList.remove(plugin);
+                pluginList = (List<Plugin>) pluginsField.get(instanceManager);
 
                 pluginsField = Bukkit.getPluginManager().getClass().getDeclaredField("plugins");
                 pluginsField.setAccessible(true);
@@ -131,6 +131,11 @@ public class ModernPaperPluginManager extends PaperPluginManager {
                         }
                     }
                 }
+
+            // The plugin can only be removed from the lookup names and the plugin list AFTER the commands are unregistered, to avoid issues with commands created via Paper's Brigadier API
+            lookupNames.remove(plugin.getName().toLowerCase());
+            pluginList.remove(plugin);
+
             if (plugins != null)
                 plugins.remove(plugin);
             if (names != null)
