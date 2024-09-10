@@ -26,7 +26,14 @@ package com.rylinaux.plugman.command;
  * #L%
  */
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.rylinaux.plugman.PlugMan;
+import com.rylinaux.plugman.util.DependencyUtil;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
@@ -37,6 +44,10 @@ import org.bukkit.plugin.Plugin;
  * @author rylinaux
  */
 public class ReloadCommand extends AbstractCommand {
+
+    private static Cache<String, String> confirmationCache = CacheBuilder.newBuilder()
+        .expireAfterWrite(30, TimeUnit.SECONDS)
+        .build();
 
     /**
      * The name of the command.
@@ -120,6 +131,20 @@ public class ReloadCommand extends AbstractCommand {
         if (PlugMan.getInstance().getPluginUtil().isPaperPlugin(target)) {
             sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("error.paper-plugin"));
             return;
+        }
+
+        List<Plugin> depends = Stream.concat(DependencyUtil.getDepends(target).stream(), DependencyUtil.getSoftDepends(target).stream()).collect(Collectors.toList());
+
+        if (!depends.isEmpty()) {
+            confirmationCache.cleanUp();
+
+            String storedPlugin = confirmationCache.getIfPresent(sender.getName());
+
+            if (storedPlugin == null || !storedPlugin.equals(target.getName())) {
+                sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("reload.confirm", target.getName()));
+                confirmationCache.put(sender.getName(), target.getName());
+                return;
+            }
         }
 
         PlugMan.getInstance().getPluginUtil().reload(target);

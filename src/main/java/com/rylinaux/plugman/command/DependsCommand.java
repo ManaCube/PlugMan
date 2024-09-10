@@ -1,6 +1,7 @@
 package com.rylinaux.plugman.command;
 
 import com.rylinaux.plugman.PlugMan;
+import com.rylinaux.plugman.util.DependencyUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -77,7 +78,7 @@ public class DependsCommand extends AbstractCommand
 			return;
 		}
 
-		List<Plugin> depends = getDepends(target), softDepends = getSoftDepends(target);
+		List<Plugin> depends = DependencyUtil.getDepends(target), softDepends = DependencyUtil.getSoftDepends(target);
 
 		if (depends.isEmpty() && softDepends.isEmpty())
 		{
@@ -99,43 +100,4 @@ public class DependsCommand extends AbstractCommand
 		sender.sendMessage(PlugMan.getInstance().getMessageFormatter().format("depends.header", target.getName(), pluginList.toString()));
 	}
 
-	private List<Plugin> getDepends(Plugin target)
-	{
-		List<Plugin> depends = new ArrayList<>();
-
-		pluginLoop:
-		for (Plugin plugin : Bukkit.getPluginManager().getPlugins())
-		{
-			for (String depend : plugin.getDescription().getDepend())
-			{
-				if (depend.equalsIgnoreCase(target.getName()))
-				{
-					depends.add(plugin);
-					continue pluginLoop;
-				}
-			}
-		}
-
-		return depends;
-	}
-
-	private List<Plugin> getSoftDepends(Plugin target)
-	{
-		List<Plugin> depends = new ArrayList<>();
-
-		pluginLoop:
-		for (Plugin plugin : Bukkit.getPluginManager().getPlugins())
-		{
-			for (String depend : plugin.getDescription().getSoftDepend())
-			{
-				if (depend.equalsIgnoreCase(target.getName()))
-				{
-					depends.add(plugin);
-					continue pluginLoop;
-				}
-			}
-		}
-
-		return depends;
-	}
 }

@@ -87,6 +87,7 @@ lookup:
 reload:
   all: '&9All plugins have been reloaded.'
   reloaded: '&9{0} has been reloaded.'
+  confirm: '&7The plugin &9{0} &7has multiple dependencies, are you sure you want to reload? Type &a/plugman reload {0} &7to proceed.'
 restart:
   all: '&9All plugins have been restarted.'
   restarted: '&9{0} has been restarted.'
