@@ -209,7 +209,6 @@ public class BukkitCommandWrap {
             this.vanillaCommandDispatcherField.setAccessible(true);
             return true;
         } catch (NoSuchFieldException e) {
-            e.printStackTrace();
             return false;
         }
     }
