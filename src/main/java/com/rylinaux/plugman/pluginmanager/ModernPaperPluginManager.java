@@ -4,6 +4,7 @@ import com.rylinaux.plugman.PlugMan;
 import com.rylinaux.plugman.api.GentleUnload;
 import com.rylinaux.plugman.api.PlugManAPI;
 import com.rylinaux.plugman.util.BukkitCommandWrapUseless;
+import io.papermc.paper.plugin.configuration.PluginMeta;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
@@ -14,7 +15,9 @@ import org.bukkit.plugin.RegisteredListener;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ModernPaperPluginManager extends PaperPluginManager {
@@ -142,6 +145,8 @@ public class ModernPaperPluginManager extends PaperPluginManager {
                 names.remove(name);
         }
 
+        this.removePluginProviders(plugin);
+
         if (!(PlugMan.getInstance().getBukkitCommandWrap() instanceof BukkitCommandWrapUseless))
             this.unloadCommands(plugin);
 
@@ -154,5 +159,48 @@ public class ModernPaperPluginManager extends PaperPluginManager {
 
         return PlugMan.getInstance().getMessageFormatter().format("unload.unloaded", name);
 
+    }
+
+    /**
+     * Remove the plugin's providers from Paper's plugin entrypoint storage.
+     * Paper registers a provider there for every plugin loaded at runtime and never removes it, so /plugins
+     * keeps listing unloaded plugins, and lists the plugin twice after reloading it with a different version.
+     *
+     * @param plugin the plugin being unloaded
+     */
+    private void removePluginProviders(Plugin plugin) {
+        try {
+            Object launchEntryPointHandler = Class.forName("io.papermc.paper.plugin.entrypoint.LaunchEntryPointHandler").getField("INSTANCE").get(null);
+            Object pluginEntrypoint = Class.forName("io.papermc.paper.plugin.entrypoint.Entrypoint").getField("PLUGIN").get(null);
+
+            Method getMethod = Arrays.stream(launchEntryPointHandler.getClass().getMethods())
+                                     .filter(method -> method.getName().equals("get") && method.getParameterCount() == 1)
+                                     .findFirst()
+                                     .orElse(null);
+
+            if (getMethod == null)
+                return;
+
+            Object providerStorage = getMethod.invoke(launchEntryPointHandler, pluginEntrypoint);
+
+            if (providerStorage == null)
+                return;
+
+            Iterable<?> providers = (Iterable<?>) providerStorage.getClass().getMethod("getRegisteredProviders").invoke(providerStorage);
+            Iterator<?> iterator = providers.iterator();
+
+            while (iterator.hasNext()) {
+                Object provider = iterator.next();
+                Method getMetaMethod = provider.getClass().getMethod("getMeta");
+                getMetaMethod.setAccessible(true);
+
+                PluginMeta meta = (PluginMeta) getMetaMethod.invoke(provider);
+
+                if (meta.getName().equalsIgnoreCase(plugin.getName()))
+                    iterator.remove();
+            }
+        } catch (Throwable throwable) {
+            Logger.getLogger(ModernPaperPluginManager.class.getName()).log(Level.WARNING, "Unable to remove " + plugin.getName() + " from the /plugins list", throwable);
+        }
     }
 }
