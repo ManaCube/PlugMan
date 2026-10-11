@@ -162,11 +162,13 @@ public class PlugMan extends JavaPlugin {
             Class.forName("io.papermc.paper.plugin.manager.PaperPluginManagerImpl");
             String[] version = Bukkit.getBukkitVersion().split("-")[0].split("\\.");
 
+            // Versions from 26.x onwards drop the leading "1.", so anything past major version 1 is modern
+            int majorVersion = Integer.parseInt(version[0]);
             int paperVersion = Integer.parseInt(version[1]) * 100;
             if (version.length >= 3)
                 paperVersion += Integer.parseInt(version[2]);
 
-            this.pluginManager = paperVersion >= 2005?
+            this.pluginManager = majorVersion > 1 || paperVersion >= 2005?
                                  new ModernPaperPluginManager(new BukkitPluginManager()) :
                                  new PaperPluginManager(new BukkitPluginManager());
         } catch (Throwable ignored) {
