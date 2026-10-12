@@ -45,6 +45,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
@@ -403,6 +404,10 @@ public class PaperPluginManager implements PluginManager {
             enableMethod.invoke(instanceManager, target);
 
             paperLoaded = true;
+        } catch (InvocationTargetException e) {
+            // Paper is loaded, but the plugin failed to load. Falling back to Bukkit would load the jar a second time
+            e.getCause().printStackTrace();
+            return PlugMan.getInstance().getMessageFormatter().format("load.invalid-plugin");
         } catch (Exception ignore) {
         } // Paper most likely not loaded
 
@@ -625,6 +630,9 @@ public class PaperPluginManager implements PluginManager {
 
     protected void closeClassLoader(Plugin plugin) {
         ClassLoader classLoader = plugin.getClass().getClassLoader();
+
+        this.unregisterPaperClassLoader(classLoader);
+
         if (!(classLoader instanceof URLClassLoader)) return;
 
         try {
@@ -645,5 +653,36 @@ public class PaperPluginManager implements PluginManager {
             Logger.getLogger(PaperPluginManager.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+
+    /**
+     * Remove the classloader from Paper's global classloader storage.
+     * Paper only does this when an enabled plugin is disabled, so a plugin that was never enabled keeps its
+     * classloader registered, and other plugins keep loading the old jar's classes from it after a reload.
+     *
+     * @param classLoader the classloader of the plugin being unloaded
+     */
+    private void unregisterPaperClassLoader(ClassLoader classLoader) {
+        Class<?> configuredClassLoaderClass;
+        Class<?> storageClass;
+
+        try {
+            configuredClassLoaderClass = Class.forName("io.papermc.paper.plugin.provider.classloader.ConfiguredPluginClassLoader");
+            storageClass = Class.forName("io.papermc.paper.plugin.provider.classloader.PaperClassLoaderStorage");
+        } catch (ClassNotFoundException ignore) {
+            // Paper's classloader storage doesn't exist on this server version
+            return;
+        }
+
+        if (!configuredClassLoaderClass.isInstance(classLoader)) {
+            return;
+        }
+
+        try {
+            Object storage = storageClass.getMethod("instance").invoke(null);
+            storageClass.getMethod("unregisterClassloader", configuredClassLoaderClass).invoke(storage, classLoader);
+        } catch (ReflectiveOperationException ex) {
+            Logger.getLogger(PaperPluginManager.class.getName()).log(Level.WARNING, "Unable to unregister the classloader from Paper's classloader storage", ex);
+        }
     }
 }
